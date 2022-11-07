@@ -19,3 +19,16 @@ app.use(express.json())
 
 
 
+
+
+//staring the server 
+
+app.get('/', (req, res) => {
+    res.send("This Server is alive !!!!")
+})
+
+// starting the port 
+
+app.listen(port, ()=> {
+    console.log(port,  "IS Runnig")
+})
