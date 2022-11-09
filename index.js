@@ -5,6 +5,7 @@ const cors = require("cors");
 let jwt = require("jsonwebtoken");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion } = require("mongodb");
+const { ObjectID } = require("bson");
 
 // port
 const port = process.env.PORT || 5000;
@@ -26,18 +27,42 @@ const run = async () => {
     .db("cleanerGuy")
     .collection("servicesCollection");
 
+
+    const reviewCollection= client.db('cleanerGuy').collection('reviewCollection')
+
   try {
 
 
-// Read Data From database 
+// ........................ Start Of ServicesCollection ................. 
 
-app.get('/services', async(req, res) => {
-    const services= await servicesCollection.find({}).toArray()
-    res.send(services)
+
+// Read single services Data From database 
+
+app.get('/services/:id', async(req, res) => {
+    const id = req.params.id
+    const query = {_id: ObjectID(id)}
+    const service= await servicesCollection.findOne(query)
+    res.send(service)
 })
 
 
+// Read all services Data From database 
 
+app.get('/services', async(req, res) => {
+
+
+
+    const page= parseInt(req.query.page)
+    const size = parseInt(req.query.size)
+    const services= await servicesCollection.find({}).skip(page*size).limit(size).toArray()
+    const count = await servicesCollection.estimatedDocumentCount()
+    res.send({count,services})
+
+
+
+})
+
+// ........................ End Of ServicesCollection ................. 
 
 
 
