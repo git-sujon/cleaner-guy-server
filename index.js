@@ -22,10 +22,13 @@ const client = new MongoClient(uri, {
   serverApi: ServerApiVersion.v1,
 });
 
+
+
 const run = async () => {
   const servicesCollection = client
     .db("cleanerGuy")
     .collection("servicesCollection");
+
 
 
     const reviewCollection= client.db('cleanerGuy').collection('reviewCollection')
@@ -50,19 +53,42 @@ app.get('/services/:id', async(req, res) => {
 
 app.get('/services', async(req, res) => {
 
-
-
     const page= parseInt(req.query.page)
     const size = parseInt(req.query.size)
     const services= await servicesCollection.find({}).skip(page*size).limit(size).toArray()
     const count = await servicesCollection.estimatedDocumentCount()
     res.send({count,services})
 
+})
 
+// Adding New Services 
+
+app.post('/services', async(req, res)=> {
+  const service= req.body
+  const result = await servicesCollection.insertOne(service)
+  res.send(result)
+})
+
+
+
+
+// ........................ End Of ServicesCollection ................. 
+
+// adding new review 
+app.post('/reviews', async (req, res) => {
+  let review= req.body
+  review ={
+    ...review,
+    Timestamp: new Date()
+  }
+
+  const result = await reviewCollection.insertOne(review)
+  res.send(result)
 
 })
 
-// ........................ End Of ServicesCollection ................. 
+
+// ........................ Starting Of ReviewCollection ................. 
 
 
 
