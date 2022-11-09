@@ -111,6 +111,14 @@ app.post('/reviews', async (req, res) => {
 
 })
 
+// Delete Reviews 
+
+app.delete('/reviews/:id', async(req, res) => {
+  const id = req.params.id
+  const query= {_id: ObjectID(id)}
+  const deletedReview= await reviewCollection.deleteOne(query)
+  res.send(deletedReview)
+})
 
 
 
