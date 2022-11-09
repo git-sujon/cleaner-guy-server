@@ -74,6 +74,13 @@ app.post('/services', async(req, res)=> {
 
 // ........................ End Of ServicesCollection ................. 
 
+app.get('/reviews', async(req, res) => {
+  const query = {}
+  const reviews= await reviewCollection.find(query).toArray()
+  res.send(reviews)
+})
+
+
 // adding new review 
 app.post('/reviews', async (req, res) => {
   let review= req.body
