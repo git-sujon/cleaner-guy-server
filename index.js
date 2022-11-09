@@ -74,11 +74,28 @@ app.post('/services', async(req, res)=> {
 
 // ........................ End Of ServicesCollection ................. 
 
+
+
+// ........................ Starting Of ReviewCollection ................. 
+
+
+// Read All Reviews 
 app.get('/reviews', async(req, res) => {
   const query = {}
   const reviews= await reviewCollection.find(query).toArray()
   res.send(reviews)
 })
+
+
+// Read One Reviews 
+app.get('/reviews/:id', async(req, res) => {
+  const id = req.params.id
+  const query= {_id: ObjectID(id)}
+  const reviews= await reviewCollection.find(query).toArray()
+  res.send(reviews)
+})
+
+
 
 
 // adding new review 
@@ -93,11 +110,6 @@ app.post('/reviews', async (req, res) => {
   res.send(result)
 
 })
-
-
-// ........................ Starting Of ReviewCollection ................. 
-
-
 
 
 
