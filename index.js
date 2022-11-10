@@ -35,6 +35,41 @@ const run = async () => {
 
   try {
 
+// ....................... JWT Token Start............................. 
+  // JWT Verify Function
+  const jwtVerify = (req, res, next) => {
+    const authHeader= req.headers.authorization
+
+    if(!authHeader) {
+        return res.status(401).send({message: "Unauthorized Access"})
+    }
+    const token = authHeader.split(' ')[1]
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decode)=> {
+       
+        if(err) {
+            return res.status(401).send({message: "ubAuthorized Access"})
+        }
+        req.decode =decode;
+        next()
+    })
+
+}
+
+
+
+
+// JWT TOken 
+app.post('/jwt', (req, res) => {
+    const user= req.body
+    const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1h'})
+    res.send({token})
+
+})
+
+
+
+
 
 // ........................ Start Of ServicesCollection ................. 
 
@@ -79,19 +114,31 @@ app.post('/services', async(req, res)=> {
 // ........................ Starting Of ReviewCollection ................. 
 
 
-// Read All Reviews 
+// Read All Reviews and read data for individual user 
 app.get('/reviews', async(req, res) => {
-  const query = {}
-  const reviews= await reviewCollection.find(query).toArray()
+  let query = {}
+  if(req.query.userEmail) {
+   query = {
+    userEmail: req.query.userEmail
+   } 
+  }
+  const options = {
+    sort: { Timestamp : -1 },
+  }
+  const reviews= await reviewCollection.find(query,options ).toArray()
   res.send(reviews)
 })
+
+
+
+
 
 
 // Read One Reviews 
 app.get('/reviews/:id', async(req, res) => {
   const id = req.params.id
   const query= {_id: ObjectID(id)}
-  const reviews= await reviewCollection.find(query).toArray()
+  const reviews= await reviewCollection.findOne(query)
   res.send(reviews)
 })
 
@@ -119,6 +166,29 @@ app.delete('/reviews/:id', async(req, res) => {
   const deletedReview= await reviewCollection.deleteOne(query)
   res.send(deletedReview)
 })
+
+  // Update A Review
+
+
+
+  
+  app.put('/reviews/:id', async(req, res)=> {
+    const id = req.params.id
+    const query= {_id: ObjectID(id)}
+    const review = req.body
+    const options = { upsert: true };
+    const updateDoc = {
+      $set: {
+        reviewText: review.reviewText, 
+        rating: review.rating,
+      },
+    };
+    const update= await reviewCollection.updateOne(query, updateDoc, options)
+
+    res.send(update)
+    
+
+  } )
 
 
 
