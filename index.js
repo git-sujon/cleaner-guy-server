@@ -33,6 +33,8 @@ const run = async () => {
 
     const reviewCollection= client.db('cleanerGuy').collection('reviewCollection')
 
+    const blogPostCollection = client.db('cleanerGuy').collection('blogPostCollection')
+
   try {
 
 // ....................... JWT Token Start............................. 
@@ -141,6 +143,32 @@ app.get('/reviews',jwtVerify, async(req, res) => {
 
 
 
+app.get('/allreviews', async(req, res) => {
+
+  let query = {}
+console.log(req.query.id)
+  if(req.query.id) {
+    query = {
+     id: req.query.id
+    } 
+   }
+
+  const options = {
+    sort: { Timestamp : -1 },
+  }
+  const reviews= await reviewCollection.find({},options ).toArray()
+  res.send(reviews)
+})
+
+
+
+
+
+
+
+
+
+
 
 // Read One Reviews 
 app.get('/reviews/:id', async(req, res) => {
@@ -197,6 +225,25 @@ app.delete('/reviews/:id', async(req, res) => {
     
 
   } )
+
+
+
+  // Reading all Blog post 
+
+  app.get('/blog', async(req, res) => {
+    const blogPost= await blogPostCollection.find({}).toArray()
+    res.send(blogPost)
+  })
+
+// Reading single blog post 
+
+app.get('/blog/:id', async(req, res) => {
+  const id = req.params.id
+  const query = {_id: ObjectID(id)}
+  const  post = await blogPostCollection.findOne(query)
+  res.send(post)
+
+})
 
 
 
