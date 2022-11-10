@@ -37,6 +37,7 @@ const run = async () => {
 
 // ....................... JWT Token Start............................. 
   // JWT Verify Function
+
   const jwtVerify = (req, res, next) => {
     const authHeader= req.headers.authorization
 
@@ -115,7 +116,14 @@ app.post('/services', async(req, res)=> {
 
 
 // Read All Reviews and read data for individual user 
-app.get('/reviews', async(req, res) => {
+app.get('/reviews',jwtVerify, async(req, res) => {
+
+  const decode= req.decode
+
+  if(decode.email !== req.query.userEmail) {
+   return res.status(403).send({message: "unauthorized Access"})
+  }
+
   let query = {}
   if(req.query.userEmail) {
    query = {
