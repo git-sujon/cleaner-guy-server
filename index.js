@@ -146,7 +146,7 @@ app.get('/reviews',jwtVerify, async(req, res) => {
 app.get('/allreviews', async(req, res) => {
 
   let query = {}
-console.log(req.query.id)
+
   if(req.query.id) {
     query = {
      id: req.query.id
